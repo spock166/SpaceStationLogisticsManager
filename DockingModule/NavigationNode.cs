@@ -2,13 +2,13 @@
 {
     public class NavigationNode
     {
-        public NavigationNode(int radius, int segment)
+        public NavigationNode(int ring, int segment)
         {
-            Radius = radius;
+            Ring = ring;
             Segment = segment;
         }
 
-        public int Radius { get; }
+        public int Ring { get; }
         public int Segment { get; }
     }
 }
