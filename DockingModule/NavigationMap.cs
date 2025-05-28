@@ -1,14 +1,20 @@
-﻿namespace DockingModule
+﻿using ShipModule;
+
+namespace DockingModule
 {
     public class NavigationMap
     {
         public NavigationMap(int numRings, int numSegments)
         {
-            Nodes = new List<NavigationNode>(numSegments * numRings);
+            Nodes = new List<INavigationNode>(numSegments * numRings + 1);
+            Ships = new Dictionary<Ship, INavigationNode>();
+
             this.numRings = numRings;
             this.numSegments = numSegments;
 
-            for (int ring = 0; ring < numRings; ring++)
+            Nodes.Add(new DockingNode(0, 0));
+
+            for (int ring = 1; ring <= numRings; ring++)
             {
                 for (int segment = 0; segment < numSegments; segment++)
                 {
@@ -16,20 +22,21 @@
                 }
             }
         }
-        public List<NavigationNode> Nodes { get; }
+        public List<INavigationNode> Nodes { get; }
+        public Dictionary<Ship, INavigationNode> Ships { get; }
 
         private readonly int numRings;
         private readonly int numSegments;
 
-        public NavigationNode GetNode(int ring, int segment)
+        public INavigationNode GetNode(int ring, int segment)
         {
-            return Nodes[numRings * segment + ring];
+            return Nodes[numSegments * ring + segment];
         }
 
-        public NavigationNode GetNode(int index)
+        public INavigationNode GetNode(int index)
         {
-            int segment = index % numRings;
-            int ring = index / numRings;
+            int ring = index / numSegments;
+            int segment = index % numSegments;
             return GetNode(ring, segment);
         }
     }

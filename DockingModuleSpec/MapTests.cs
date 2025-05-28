@@ -5,22 +5,27 @@ namespace DockingModuleTests
     [TestClass]
     public sealed class MapTests
     {
-        private readonly NavigationMap testMap = new NavigationMap(3, 3);
+        private const int NUM_RINGS = 3;
+        private const int NUM_SEGMENTS = 4;
+        private readonly NavigationMap testMap = new NavigationMap(NUM_RINGS, NUM_SEGMENTS);
 
         [TestMethod]
-        public void GetNode_FromIndex_GetsCorrectNode()
+        [DataRow(0, 0, 0)]
+        [DataRow(1, 1, 0)]
+        [DataRow(NUM_SEGMENTS + 1, 2, 0)]
+        [DataRow(NUM_RINGS * NUM_SEGMENTS, NUM_RINGS, NUM_SEGMENTS - 1)]
+        public void GetNode_FromIndex_GetsCorrectNode(int index, int expectedRing, int expectedSegment)
         {
-            NavigationNode node = testMap.GetNode(0);
-            Assert.AreEqual(0, node.Segment);
-            Assert.AreEqual(0, node.Ring);
+            INavigationNode node = testMap.GetNode(index);
+            Assert.AreEqual(expectedRing, node.Ring, "Ring Mismatch");
+            Assert.AreEqual(expectedSegment, node.Segment, "Segment Mismatch");
+        }
 
-            node = testMap.GetNode(1);
-            Assert.AreEqual(0, node.Segment);
-            Assert.AreEqual(1, node.Ring);
-
-            node = testMap.GetNode(3);
-            Assert.AreEqual(1, node.Segment);
-            Assert.AreEqual(0, node.Ring);
+        [TestMethod]
+        public void ExpectNode_DockingNode_IsOrigin()
+        {
+            INavigationNode node = testMap.GetNode(0);
+            Assert.IsInstanceOfType(node, typeof(DockingNode));
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace DockingModule
 {
-    public class NavigationNode
+    public class NavigationNode : INavigationNode
     {
         public NavigationNode(int ring, int segment)
         {
