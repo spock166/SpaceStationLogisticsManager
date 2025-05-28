@@ -1,4 +1,5 @@
-﻿using ShipModule;
+﻿using DockingModule;
+using ShipModule;
 
 namespace SpaceStationLogisticsManager
 {
@@ -17,6 +18,11 @@ namespace SpaceStationLogisticsManager
                 Console.WriteLine("----");
             }
 
+            Console.ReadKey();
+
+            NavigationMap map = new NavigationMap(3, 3);
+            Console.WriteLine("Map Generated");
+            Console.WriteLine(map.GetNode(3));
             Console.ReadKey();
         }
     }

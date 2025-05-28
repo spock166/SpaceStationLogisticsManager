@@ -1,8 +1,8 @@
 ﻿namespace DockingModule
 {
-    internal class Map
+    public class NavigationMap
     {
-        public Map(int numRings, int numSegments)
+        public NavigationMap(int numRings, int numSegments)
         {
             Nodes = new List<NavigationNode>(numSegments * numRings);
             this.numRings = numRings;
@@ -12,7 +12,7 @@
             {
                 for (int segment = 0; segment < numSegments; segment++)
                 {
-                    Nodes[numSegments * ring + segment] = new NavigationNode(ring, segment);
+                    Nodes.Add(new NavigationNode(ring, segment));
                 }
             }
         }
@@ -23,13 +23,13 @@
 
         public NavigationNode GetNode(int ring, int segment)
         {
-            return Nodes[numSegments * ring + segment];
+            return Nodes[numRings * segment + ring];
         }
 
         public NavigationNode GetNode(int index)
         {
-            int segment = index % numSegments;
-            int ring = index / numSegments;
+            int segment = index % numRings;
+            int ring = index / numRings;
             return GetNode(ring, segment);
         }
     }
