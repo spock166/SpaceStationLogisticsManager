@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingModuleTests", "DockingModuleSpec\DockingModuleTests.csproj", "{F670AB48-CDBD-4B8F-9F28-CED1058EA030}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGraphics", "ConsoleGraphics\ConsoleGraphics.csproj", "{D765004D-014F-4D0F-A2FD-A1D04DCD2C24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{F670AB48-CDBD-4B8F-9F28-CED1058EA030}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F670AB48-CDBD-4B8F-9F28-CED1058EA030}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F670AB48-CDBD-4B8F-9F28-CED1058EA030}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D765004D-014F-4D0F-A2FD-A1D04DCD2C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D765004D-014F-4D0F-A2FD-A1D04DCD2C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D765004D-014F-4D0F-A2FD-A1D04DCD2C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D765004D-014F-4D0F-A2FD-A1D04DCD2C24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
