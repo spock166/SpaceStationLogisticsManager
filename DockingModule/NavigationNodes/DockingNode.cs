@@ -1,6 +1,6 @@
 ﻿using ShipModule;
 
-namespace DockingModule
+namespace DockingModule.NavigationNodes
 {
     public class DockingNode : INavigationNode
     {

@@ -1,4 +1,4 @@
-﻿namespace DockingModule
+﻿namespace DockingModule.NavigationNodes
 {
     public interface INavigationNode
     {
