@@ -3,18 +3,20 @@
     public class Ship
     {
 
-        public Ship()
+        public Ship(ShipDirection direction)
         {
+            Direction = direction;
             Registry = GenerateRegistry();
         }
 
-        public Ship(int displayedChecksum) : this()
+        public Ship(ShipDirection direction, int displayedChecksum) : this(direction)
         {
             Registry = GenerateRegistry(displayedChecksum);
         }
 
         private static readonly Random rng = new Random();
 
+        public ShipDirection Direction { get; }
         public Registry Registry { get; private set; }
 
         #region Public Methods
