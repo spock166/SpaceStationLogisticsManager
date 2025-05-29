@@ -1,5 +1,4 @@
 ﻿using DockingModule;
-using ShipModule;
 
 namespace SpaceStationLogisticsManager
 {
@@ -9,22 +8,29 @@ namespace SpaceStationLogisticsManager
 
         public static void Main(string[] args)
         {
-            for (int i = 0; i < 10; i++)
-            {
-                Ship testShip = rng.NextDouble() < 0.8 ? new Ship(ShipDirection.Inbound) : new Ship(ShipDirection.Outbound, rng.Next(11));
-                Console.WriteLine("Registry: " + testShip.Registry);
-                Console.WriteLine("Displayed Checksum: " + testShip.Registry.DisplayedChecksum);
-                Console.WriteLine("Actual Checksum: " + testShip.Registry.GenerateChecksum());
-                Console.WriteLine("Ship Direction: " + testShip.Direction);
-                Console.WriteLine("----");
-            }
-
-            Console.ReadKey();
-
+            bool running = true;
+            int currentTick = 0;
             NavigationMap map = new NavigationMap(3, 3);
-            Console.WriteLine("Map Generated");
-            Console.WriteLine(map.GetNode(3));
-            Console.ReadKey();
+            ConsoleGraphics graphics = new ConsoleGraphics(120, 40);
+
+            while (running)
+            {
+                graphics.ClearBuffer();
+                graphics.DrawStringToBuffer(0, 0, "Press Enter to advance time.");
+                graphics.DrawStringToBuffer(120 - 10, 0, "Tick " + currentTick);
+                graphics.DrawStringToBuffer(0, 1, "Hello World!");
+                graphics.RenderBuffer();
+
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo keyPressed = Console.ReadKey(true);
+                    if (keyPressed.Key == ConsoleKey.Enter)
+                    {
+                        currentTick++;
+                    }
+                }
+
+            }
         }
     }
 }
