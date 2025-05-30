@@ -68,17 +68,18 @@ namespace SpaceStationLogisticsManager
                 engine.AddCircleToBuffer(centerX, centerY, (float)(radius * (ring + 1)) / numRings);
             }
 
-            float deltaDegree = 360.0f / numSegments;
+            float deltaRadii = (2 * (float)Math.PI) / numSegments;
 
-            for (float degree = 0; degree < 360; degree += deltaDegree)
+            for (float angle = 0; angle < 2 * (float)Math.PI; angle += deltaRadii)
             {
-                int x = (int)(radius * Math.Cos(degree * Math.PI / 180)) + centerX;
-                int y = (int)(radius * Math.Sin(degree * Math.PI / 180)) + centerY;
+                //float correctionFactor = 0.75f * Math.Abs((float)Math.Cos(angle)) + 1;  TODO: Use this to make circles more circle
+                int x = (int)(radius * Math.Cos(angle)) + centerX;
+                int y = (int)(radius * Math.Sin(angle)) + centerY;
                 engine.AddLineToBuffer(centerX, centerY, x, y);
                 for (int ring = 0; ring < numRings; ring++)
                 {
-                    x = (int)(radius * (ring + 1) * Math.Cos(degree * Math.PI / 180) / numRings) + centerX;
-                    y = (int)(radius * (ring + 1) * Math.Sin(degree * Math.PI / 180) / numRings) + centerY;
+                    x = (int)(radius * (ring + 1) * Math.Cos(angle) / numRings) + centerX;
+                    y = (int)(radius * (ring + 1) * Math.Sin(angle) / numRings) + centerY;
                     engine.AddPointToBuffer(x, y);
                 }
             }
