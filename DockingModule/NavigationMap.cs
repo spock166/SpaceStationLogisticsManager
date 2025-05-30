@@ -20,8 +20,8 @@ namespace DockingModule
             Nodes = new List<INavigationNode>(numSegments * numRings + 1);
             Ships = new Dictionary<Ship, INavigationNode>();
 
-            this.numRings = numRings;
-            this.numSegments = numSegments;
+            this.RingCount = numRings;
+            this.SegmentCount = numSegments;
 
             Nodes.Add(new DockingNode(0, 0));
 
@@ -36,8 +36,8 @@ namespace DockingModule
         public List<INavigationNode> Nodes { get; }
         public Dictionary<Ship, INavigationNode> Ships { get; }
 
-        private readonly int numRings;
-        private readonly int numSegments;
+        public int RingCount { get; private set; }
+        public int SegmentCount { get; private set; }
 
         public INavigationNode GetNode(int ring, int segment)
         {
@@ -57,8 +57,8 @@ namespace DockingModule
                 return 0;
             }
 
-            segment = (numSegments + segment) % numSegments + 1;
-            return numSegments * (ring - 1) + segment;
+            segment = (SegmentCount + segment) % SegmentCount + 1;
+            return SegmentCount * (ring - 1) + segment;
         }
 
         public void GetCoordinateFromIndex(int index, out int ring, out int segment)
@@ -75,8 +75,8 @@ namespace DockingModule
                 return;
             }
 
-            ring = (index - 1) / numSegments + 1;
-            segment = (index - 1) % numSegments;
+            ring = (index - 1) / SegmentCount + 1;
+            segment = (index - 1) % SegmentCount;
         }
 
         public List<INavigationNode> GetValidNodes(int ring, int segment, ShipDirection direction)
@@ -91,7 +91,7 @@ namespace DockingModule
                     return adjacentNodes;
                 }
 
-                for (int s = 0; s < numSegments; s++)
+                for (int s = 0; s < SegmentCount; s++)
                 {
                     adjacentNodes.Add(GetNode(1, s));
                 }
@@ -104,7 +104,7 @@ namespace DockingModule
 
             if (direction == ShipDirection.Outbound)
             {
-                if (ring == numRings)
+                if (ring == RingCount)
                 {
                     return adjacentNodes;
                 }
