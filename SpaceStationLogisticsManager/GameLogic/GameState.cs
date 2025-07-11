@@ -1,6 +1,6 @@
 using DockingModule;
 
-namespace SpaceStationLogisticsManager
+namespace SpaceStationLogisticsManager.GameLogic
 {
     /// <summary>
     /// Represents the state of the game, including the current tick and navigation map.

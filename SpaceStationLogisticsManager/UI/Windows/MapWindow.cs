@@ -1,8 +1,7 @@
 using DockingModule;
 using Terminal.Gui;
-using ConsoleGraphics;
 
-namespace SpaceStationLogisticsManager
+namespace SpaceStationLogisticsManager.UI.Windows
 {
     /// <summary>
     /// Represents a window for displaying the docking map.

@@ -1,6 +1,6 @@
 ﻿using Terminal.Gui;
 
-namespace ConsoleGraphics
+namespace SpaceStationLogisticsManager.UI
 {
     /// <summary>
     /// Provides graphical utilities for drawing shapes and text in Terminal.Gui windows.

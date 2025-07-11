@@ -1,4 +1,6 @@
 ﻿using DockingModule;
+using SpaceStationLogisticsManager.GameLogic;
+using SpaceStationLogisticsManager.UI.Windows;
 using Terminal.Gui;
 
 namespace SpaceStationLogisticsManager
