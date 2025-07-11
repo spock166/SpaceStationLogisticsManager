@@ -14,13 +14,13 @@ namespace SpaceStationLogisticsManager.UI.Windows
         /// </summary>
         /// <param name="title">The title of the window.</param>
         /// <param name="gameState">The game state to track and display.</param>
-        public StatusWindow(string title, GameState gameState) : base(title)
+        public StatusWindow(string title, Engine gameEngine) : base(title)
         {
             // Subscribe to the OnTickCompleted event to refresh the status when the tick changes.
-            gameState.OnTickCompleted += (args) => RefreshStatus(args.CurrentTick);
+            gameEngine.OnTickCompleted += (args) => RefreshStatus(args.CurrentTick);
 
             // Initialize the status display.
-            RefreshStatus(gameState.CurrentTick);
+            RefreshStatus(gameEngine.CurrentState.CurrentTick);
         }
 
         /// <summary>

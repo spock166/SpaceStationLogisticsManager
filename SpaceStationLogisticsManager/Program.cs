@@ -1,5 +1,4 @@
-﻿using DockingModule;
-using SpaceStationLogisticsManager.GameLogic;
+﻿using SpaceStationLogisticsManager.GameLogic;
 using SpaceStationLogisticsManager.UI.Windows;
 using Terminal.Gui;
 
@@ -18,11 +17,7 @@ namespace SpaceStationLogisticsManager
         /// <param name="args">Command-line arguments.</param>
         public static void Main(string[] args)
         {
-            GameState gameState = new GameState
-            {
-                CurrentTick = 0,
-                Map = new NavigationMap(3, 4) // Hard-code map dimensions for now
-            };
+            Engine engine = new Engine();
 
             Application.Init();
             Toplevel top = Application.Top;
@@ -41,7 +36,7 @@ namespace SpaceStationLogisticsManager
             MapWindow mapPane = new MapWindow("Docking Map") { X = 0, Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
 
             // Create status pane
-            StatusWindow statusPane = new StatusWindow("Status", gameState) { X = Pos.Right(mapPane), Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
+            StatusWindow statusPane = new StatusWindow("Status", engine) { X = Pos.Right(mapPane), Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
 
             TabView.Tab mapTab = new TabView.Tab("Docking Map", mapPane);
             TabView.Tab statusTab = new TabView.Tab("Status", statusPane);
@@ -52,13 +47,13 @@ namespace SpaceStationLogisticsManager
             Window menuPane = new Window("Operations") { X = Pos.Right(tabView), Y = 0, Width = Dim.Percent(50), Height = Dim.Fill() };
 
             // Create status bar
-            StatusBar statusBar = CreateStatusBar(gameState, mapPane, top);
+            StatusBar statusBar = CreateStatusBar(engine, mapPane, top);
             top.Add(tabView, menuPane);
             top.Add(statusBar);
 
-            AddEventHandlers(top, tabView, mapTab, mapPane, statusPane, gameState);
+            AddEventHandlers(top, tabView, mapTab, mapPane, statusPane, engine);
 
-            mapPane.RefreshMap(top.Frame.Size, gameState.Map);
+            mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
             Application.Run();
             Application.Shutdown();
         }
@@ -80,38 +75,38 @@ namespace SpaceStationLogisticsManager
         /// <returns>A <see cref="MenuBar"/> instance.</returns>
         private static MenuBar CreateMenuBar()
         {
-            return new MenuBar(new MenuBarItem[]
-            {
-                new MenuBarItem("_File", new MenuItem[]
-                {
+            return new MenuBar(
+            [
+                new MenuBarItem("_File",
+                [
                     new MenuItem("_Quit", "Quit the application", () => Application.RequestStop())
-                }),
-                new MenuBarItem("_Help", new MenuItem[]
-                {
+                ]),
+                new MenuBarItem("_Help",
+                [
                     new MenuItem("_About", "Show about dialog", () => MessageBox.Query("About", "Space Station Logistics Manager", "OK"))
-                })
-            });
+                ])
+            ]);
         }
 
         /// <summary>
         /// Creates the status bar for the application.
         /// </summary>
-        /// <param name="gameState">The game state to track.</param>
+        /// <param name="gameEngine">The game engine to track.</param>
         /// <param name="mapPane">The map window to refresh.</param>
         /// <param name="top">The top-level application window.</param>
         /// <returns>A <see cref="StatusBar"/> instance.</returns>
-        private static StatusBar CreateStatusBar(GameState gameState, MapWindow mapPane, Toplevel top)
+        private static StatusBar CreateStatusBar(Engine gameEngine, MapWindow mapPane, Toplevel top)
         {
-            return new StatusBar(new StatusItem[]
-            {
+            return new StatusBar(
+            [
                 new StatusItem(Key.CtrlMask | Key.Q, "~^Q~ Quit", () => Application.RequestStop()),
                 new StatusItem(Key.F1, "~F1~ Help", () => MessageBox.Query("Help", "Show help dialog", "OK")),
                 new StatusItem(Key.a, "~A~dvance Tick", () =>
                 {
-                    gameState.NextTick();
-                    mapPane.RefreshMap(top.Frame.Size, gameState.Map);
+                    gameEngine.NextTick();
+                    mapPane.RefreshMap(top.Frame.Size, gameEngine.CurrentState.Map);
                 }),
-            });
+            ]);
         }
 
         /// <summary>
@@ -122,14 +117,14 @@ namespace SpaceStationLogisticsManager
         /// <param name="mapTab">The map tab to refresh.</param>
         /// <param name="mapPane">The map window to refresh.</param>
         /// <param name="statusPane">The status window to update.</param>
-        /// <param name="gameState">The game state to track.</param>
-        private static void AddEventHandlers(Toplevel top, TabView tabView, TabView.Tab mapTab, MapWindow mapPane, Window statusPane, GameState gameState)
+        /// <param name="gameEngine">The game engine to track.</param>
+        private static void AddEventHandlers(Toplevel top, TabView tabView, TabView.Tab mapTab, MapWindow mapPane, Window statusPane, Engine gameEngine)
         {
             top.Resized += (Size newSize) =>
             {
                 if (tabView.SelectedTab == mapTab)
                 {
-                    mapPane.RefreshMap(newSize, gameState.Map);
+                    mapPane.RefreshMap(newSize, gameEngine.CurrentState.Map);
                 }
             };
 
@@ -137,15 +132,15 @@ namespace SpaceStationLogisticsManager
             {
                 if (e.NewTab == mapTab)
                 {
-                    mapPane.RefreshMap(top.Frame.Size, gameState.Map);
+                    mapPane.RefreshMap(top.Frame.Size, gameEngine.CurrentState.Map);
                 }
             };
 
-            gameState.OnTickCompleted += (args) =>
+            gameEngine.OnTickCompleted += (args) =>
             {
                 if (tabView.SelectedTab == mapTab)
                 {
-                    mapPane.RefreshMap(top.Frame.Size, gameState.Map);
+                    mapPane.RefreshMap(top.Frame.Size, gameEngine.CurrentState.Map);
                 }
             };
 
