@@ -46,7 +46,7 @@ namespace SpaceStationLogisticsManager.UI.Windows
 
             float deltaRadii = 2 * (float)Math.PI / numSegments;
 
-            //for (float angle = 0; angle < 2 * (float)Math.PI; angle += deltaRadii)
+            
             for (int segment = 0; segment < numSegments; segment++)
             {
                 float angle = segment * deltaRadii;
