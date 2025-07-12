@@ -1,6 +1,6 @@
 ﻿using Terminal.Gui;
 
-namespace ConsoleGraphics
+namespace SpaceStationLogisticsManager.UI
 {
     /// <summary>
     /// Provides graphical utilities for drawing shapes and text in Terminal.Gui windows.
@@ -55,7 +55,7 @@ namespace ConsoleGraphics
                 return;
             }
 
-            if (endX == endY)
+            if (startY == endY)
             {
                 AddHorizontalLineToWindow(window, startY, startX, endX);
                 return;
@@ -106,6 +106,17 @@ namespace ConsoleGraphics
         }
 
         /// <summary>
+        /// Adds a ship to the specified window at the given coordinates.
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="x">The x-coordinate of the ship.</param>
+        /// <param name="y">The y-coordinate of the ship.</param>
+        public static void AddShipToWindow(Window window, int x, int y)
+        {
+            AddCharacterToWindow(window, x, y, 'S'); // Use a rocket emoji for ships
+        }
+
+        /// <summary>
         /// Adds a vertical line to the specified window.
         /// </summary>
         /// <param name="window">The window to draw the line in.</param>
@@ -141,7 +152,7 @@ namespace ConsoleGraphics
 
             for (int x = startX; x <= endX; x++)
             {
-                AddCharacterToWindow(window, y, x, '-');
+                AddCharacterToWindow(window, x, y, '-');
             }
         }
 
