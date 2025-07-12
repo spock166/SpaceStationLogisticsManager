@@ -17,10 +17,13 @@ namespace SpaceStationLogisticsManager.GameLogic
         /// </summary>
         public required NavigationMap Map { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameState"/> class.
+        /// </summary>
         public GameState()
         {
             CurrentTick = 0;
-            Map = new NavigationMap(3, 4); // Default map dimensions            
+            Map = new NavigationMap(3, 4); // Default map dimensions      
         }
     }
 }

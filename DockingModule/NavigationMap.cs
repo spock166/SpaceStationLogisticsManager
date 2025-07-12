@@ -184,5 +184,86 @@ namespace DockingModule
 
             return GetValidNodes(ring, segment, direction);
         }
+
+        /// <summary>
+        /// Determines if a navigation node is free (not occupied by a ship).
+        /// </summary>
+        /// <param name="node">The navigation node to check.</param>
+        /// <returns>True if the node is free; otherwise, false.</returns>
+        private bool IsNodeFree(INavigationNode node)
+        {
+            if (node is DockingNode)
+            {
+                return true; // Docking node is always free
+            }
+
+            if (node is NavigationNode navNode)
+            {
+                return !Ships.Values.Any(shipNode => shipNode.Ring == navNode.Ring && shipNode.Segment == navNode.Segment);
+            }
+
+            return false; // Unknown node type
+        }
+
+        /// <summary>
+        /// Retrieves the ship located at the specified ring and segment.
+        /// </summary>
+        /// <param name="ring">The ring coordinate of the node.</param>
+        /// <param name="segment">The segment coordinate of the node.</param>
+        /// <returns>The ship at the specified location, or null if no ship is present.</returns>
+        public Ship? GetShipAt(int ring, int segment)
+        {
+            INavigationNode node = GetNode(ring, segment);
+            if (node is DockingNode)
+            {
+                return null; // Docking node does not have a ship
+            }
+
+            if (node is NavigationNode navNode)
+            {
+                return Ships.FirstOrDefault(ship => ship.Value.Ring == navNode.Ring && ship.Value.Segment == navNode.Segment).Key;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Retrieves a list of open inbound nodes for ships.
+        /// </summary>
+        /// <returns>A list of navigation nodes that are open for inbound ships.</returns>
+        private List<INavigationNode> GetOpenInboundNode()
+        {
+            List<INavigationNode> openNodes = new List<INavigationNode>();
+
+            for (int segment = 0; segment < SegmentCount; segment++)
+            {
+                INavigationNode node = GetNode(RingCount - 1, segment);
+                if (IsNodeFree(node))
+                {
+                    openNodes.Add(node);
+                }
+            }
+
+            return openNodes;
+        }
+
+        /// <summary>
+        /// Attempts to add an inbound ship to the navigation map.
+        /// </summary>
+        /// <returns>True if the ship was successfully added; otherwise, false.</returns>
+        public bool TryAddInboundShip()
+        {
+            List<INavigationNode> openNodes = GetOpenInboundNode();
+
+            if (openNodes.Count == 0)
+            {
+                return false; // No open nodes available for inbound ships
+            }
+
+            INavigationNode selectedNode = openNodes[0]; // Select the first available node for simplicity
+            Ship newShip = new Ship(ShipDirection.Inbound);
+            Ships.Add(newShip, selectedNode);
+            return true;
+        }
     }
 }

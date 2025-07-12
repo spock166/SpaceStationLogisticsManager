@@ -9,8 +9,6 @@ namespace SpaceStationLogisticsManager
     /// </summary>
     public class Program
     {
-        private static readonly Random rng = new Random();
-
         /// <summary>
         /// Main method to initialize and run the application.
         /// </summary>
@@ -46,6 +44,35 @@ namespace SpaceStationLogisticsManager
             // Create operations pane
             Window menuPane = new Window("Operations") { X = Pos.Right(tabView), Y = 0, Width = Dim.Percent(50), Height = Dim.Fill() };
 
+            ListView operationsList = new ListView(new string[]
+            {
+                "Select Ship",
+                "Quit Game"
+            })
+            {
+                X = 0,
+                Y = 0,
+                Width = Dim.Fill(),
+                Height = Dim.Fill(),
+            };
+            operationsList.OpenSelectedItem += (args) =>
+            {
+                switch (args.Value)
+                {
+                    case "Select Ship":
+                        MessageBox.Query("Select Ship", "Ship selection is not yet implemented.", "OK");
+                        break;
+                    case "Quit Game":
+                        int result = MessageBox.Query("Quit Game", "Are you sure you want to quit?", "Yes", "No");
+                        if (result == 0)
+                        {
+                            Application.RequestStop();
+                        }
+                        break;
+                }
+            };
+            menuPane.Add(operationsList);
+
             // Create status bar
             StatusBar statusBar = CreateStatusBar(engine, mapPane, top);
             top.Add(tabView, menuPane);
@@ -79,7 +106,12 @@ namespace SpaceStationLogisticsManager
             [
                 new MenuBarItem("_File",
                 [
-                    new MenuItem("_Quit", "Quit the application", () => Application.RequestStop())
+                    new MenuItem("_Quit", "Quit the application", () => {
+                        int result = MessageBox.Query("Quit Game", "Are you sure you want to quit?", "Yes", "No");
+                        if (result == 0)
+                        {
+                            Application.RequestStop();
+                        }})
                 ]),
                 new MenuBarItem("_Help",
                 [

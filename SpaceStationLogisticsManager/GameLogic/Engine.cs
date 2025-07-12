@@ -2,8 +2,13 @@ using DockingModule;
 
 namespace SpaceStationLogisticsManager.GameLogic
 {
+    /// <summary>
+    /// The main engine of the game that manages the game state.
+    /// </summary>
     public class Engine
     {
+        private static readonly Random rng = new Random();
+
         /// <summary>
         /// The current state of the game.
         /// </summary>
@@ -28,8 +33,26 @@ namespace SpaceStationLogisticsManager.GameLogic
         /// </summary>
         public void NextTick()
         {
+            // TODO: Move all ships on the map
+
+            if (rng.NextDouble() < GetInboundSpawnChance())
+            {
+                CurrentState.Map.TryAddInboundShip();
+            }
+
+            // TODO: Add logic for outbound ships
+
             CurrentState.CurrentTick++;
             OnTickCompleted?.Invoke(new TickCompletedEventArgs(CurrentState.CurrentTick));
+        }
+
+        /// <summary>
+        /// Gets the chance of an inbound ship spawning.
+        /// </summary>
+        private double GetInboundSpawnChance()
+        {
+            // TODO: Implement logic to determine inbound ship spawn chance
+            return 0.1; // Placeholder value
         }
 
         /// <summary>

@@ -46,8 +46,10 @@ namespace SpaceStationLogisticsManager.UI.Windows
 
             float deltaRadii = 2 * (float)Math.PI / numSegments;
 
-            for (float angle = 0; angle < 2 * (float)Math.PI; angle += deltaRadii)
+            //for (float angle = 0; angle < 2 * (float)Math.PI; angle += deltaRadii)
+            for (int segment = 0; segment < numSegments; segment++)
             {
+                float angle = segment * deltaRadii;
                 int x = (int)(radius * Math.Cos(angle)) + centerX;
                 int y = (int)(radius * Math.Sin(angle)) + centerY;
                 Graphics.AddLineToWindow(this, centerX, centerY, x, y);
@@ -55,7 +57,14 @@ namespace SpaceStationLogisticsManager.UI.Windows
                 {
                     x = (int)(radius * (ring + 1) * Math.Cos(angle) / numRings) + centerX;
                     y = (int)(radius * (ring + 1) * Math.Sin(angle) / numRings) + centerY;
-                    Graphics.AddPointToWindow(this, x, y);
+                    if (map.GetShipAt(ring, segment) != null)
+                    {
+                        Graphics.AddShipToWindow(this, x, y);
+                    }
+                    else
+                    {
+                        Graphics.AddPointToWindow(this, x, y);
+                    }
                 }
             }
             Graphics.AddPointToWindow(this, centerX, centerY);
