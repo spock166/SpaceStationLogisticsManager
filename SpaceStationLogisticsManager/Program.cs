@@ -22,29 +22,56 @@ namespace SpaceStationLogisticsManager
 
             // Set color scheme for the application
             ConfigureColors();
+            CreateUI(engine, top);
+            Application.Run();
+            Application.Shutdown();
+        }
 
+        /// <summary>
+        /// Creates the user interface for the application.
+        /// </summary>
+        /// <param name="engine">The game engine instance.</param>
+        /// <param name="top">The top-level application window.</param>
+        private static void CreateUI(Engine engine, Toplevel top)
+        {
             // Create menu bar
             MenuBar topMenu = CreateMenuBar();
             top.Add(topMenu);
+            TabView tabPane = CreateTabPane(engine, top);
+            Window menuPane = CreateMenuPane(tabPane);
 
-            // Create tab view
-            TabView tabView = new TabView() { X = 0, Y = 1, Width = Dim.Percent(50), Height = Dim.Fill() - 1 };
+            top.Add(tabPane, menuPane);
 
-            // Create docking map pane
-            MapWindow mapPane = new MapWindow("Docking Map") { X = 0, Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
+            // Create status bar
+            StatusBar statusBar = CreateStatusBar(engine);
+            top.Add(statusBar);
 
-            // Create status pane
-            StatusWindow statusPane = new StatusWindow("Status", engine) { X = Pos.Right(mapPane), Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
+            top.AddKeyBinding(Key.CtrlMask | Key.Q, Command.QuitToplevel);
 
-            TabView.Tab mapTab = new TabView.Tab("Docking Map", mapPane);
-            TabView.Tab statusTab = new TabView.Tab("Status", statusPane);
-            tabView.AddTab(mapTab, true);
-            tabView.AddTab(statusTab, false);
+        }
+
+        /// <summary>
+        /// Creates the operations pane for the application.
+        /// </summary>
+        /// <param name="tabPane">The tab view to align the operations pane with.</param>
+        /// <returns>A <see cref="Window"/> instance representing the operations pane.</returns>
+        private static Window CreateMenuPane(TabView tabPane)
+        {
 
             // Create operations pane
-            Window menuPane = new Window("Operations") { X = Pos.Right(tabView), Y = 0, Width = Dim.Percent(50), Height = Dim.Fill() };
+            Window menuPane = new Window("Operations") { X = Pos.Right(tabPane), Y = 0, Width = Dim.Percent(50), Height = Dim.Fill() };
+            ListView topLevelMenu = CreateTopLevelMenu();
+            menuPane.Add(topLevelMenu);
+            return menuPane;
+        }
 
-            ListView operationsList = new ListView(new string[]
+        /// <summary>
+        /// Creates the top-level menu for the operations pane.
+        /// </summary>
+        /// <returns>A <see cref="ListView"/> instance representing the top-level menu.</returns>
+        private static ListView CreateTopLevelMenu()
+        {
+            ListView topLevelMenu = new ListView(new string[]
             {
                 "Select Ship",
                 "Quit Game"
@@ -55,7 +82,7 @@ namespace SpaceStationLogisticsManager
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
             };
-            operationsList.OpenSelectedItem += (args) =>
+            topLevelMenu.OpenSelectedItem += (args) =>
             {
                 switch (args.Value)
                 {
@@ -63,26 +90,87 @@ namespace SpaceStationLogisticsManager
                         MessageBox.Query("Select Ship", "Ship selection is not yet implemented.", "OK");
                         break;
                     case "Quit Game":
-                        int result = MessageBox.Query("Quit Game", "Are you sure you want to quit?", "Yes", "No");
-                        if (result == 0)
-                        {
-                            Application.RequestStop();
-                        }
+                        QuitQuery();
                         break;
                 }
             };
-            menuPane.Add(operationsList);
+            return topLevelMenu;
+        }
 
-            // Create status bar
-            StatusBar statusBar = CreateStatusBar(engine, mapPane, top);
-            top.Add(tabView, menuPane);
-            top.Add(statusBar);
+        /// <summary>
+        /// Displays a confirmation dialog for quitting the application.
+        /// </summary>
+        private static void QuitQuery()
+        {
+            int result = MessageBox.Query("Quit Game", "Are you sure you want to quit?", "Yes", "No");
+            if (result == 0)
+            {
+                Application.RequestStop();
+            }
+        }
 
-            AddEventHandlers(top, tabView, mapTab, mapPane, statusPane, engine);
+        /// <summary>
+        /// Creates the tab view for the application.
+        /// </summary>
+        /// <param name="engine">The game engine instance.</param>
+        /// <param name="top">The top-level application window.</param>
+        /// <returns>A <see cref="TabView"/> instance representing the tab view.</returns>
+        private static TabView CreateTabPane(Engine engine, Toplevel top)
+        {
+
+            // Create tab view
+            TabView tabPane = new TabView() { X = 0, Y = 1, Width = Dim.Percent(50), Height = Dim.Fill() - 1 };
+
+            // Create docking map pane
+            MapWindow mapPane = new MapWindow("Docking Map") { X = 0, Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
+
+            TabView.Tab mapTab = new TabView.Tab("Docking Map", mapPane);
+            AddMapEventHandlers(engine, top, tabPane, mapPane, mapTab);
+            tabPane.AddTab(mapTab, true);
+
+            // Create status pane
+            StatusWindow statusPane = new StatusWindow("Status", engine) { X = Pos.Right(mapPane), Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
+            TabView.Tab statusTab = new TabView.Tab("Status", statusPane);
+            tabPane.AddTab(statusTab, false);
+
 
             mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
-            Application.Run();
-            Application.Shutdown();
+            return tabPane;
+        }
+
+        /// <summary>
+        /// Adds event handlers for the docking map tab.
+        /// </summary>
+        /// <param name="engine">The game engine instance.</param>
+        /// <param name="top">The top-level application window.</param>
+        /// <param name="tabPane">The tab view containing the docking map tab.</param>
+        /// <param name="mapPane">The docking map window.</param>
+        /// <param name="mapTab">The docking map tab.</param>
+        private static void AddMapEventHandlers(Engine engine, Toplevel top, TabView tabPane, MapWindow mapPane, TabView.Tab mapTab)
+        {
+            top.Resized += (Size newSize) =>
+            {
+                if (tabPane.SelectedTab == mapTab)
+                {
+                    mapPane.RefreshMap(newSize, engine.CurrentState.Map);
+                }
+            };
+
+            tabPane.SelectedTabChanged += (sender, e) =>
+            {
+                if (e.NewTab == mapTab)
+                {
+                    mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
+                }
+            };
+
+            engine.OnTickCompleted += (args) =>
+            {
+                if (tabPane.SelectedTab == mapTab)
+                {
+                    mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
+                }
+            };
         }
 
         /// <summary>
@@ -99,19 +187,14 @@ namespace SpaceStationLogisticsManager
         /// <summary>
         /// Creates the menu bar for the application.
         /// </summary>
-        /// <returns>A <see cref="MenuBar"/> instance.</returns>
+        /// <returns>A <see cref="MenuBar"/> instance representing the menu bar.</returns>
         private static MenuBar CreateMenuBar()
         {
             return new MenuBar(
             [
                 new MenuBarItem("_File",
                 [
-                    new MenuItem("_Quit", "Quit the application", () => {
-                        int result = MessageBox.Query("Quit Game", "Are you sure you want to quit?", "Yes", "No");
-                        if (result == 0)
-                        {
-                            Application.RequestStop();
-                        }})
+                    new MenuItem("_Quit", "Quit the application", QuitQuery)
                 ]),
                 new MenuBarItem("_Help",
                 [
@@ -123,60 +206,16 @@ namespace SpaceStationLogisticsManager
         /// <summary>
         /// Creates the status bar for the application.
         /// </summary>
-        /// <param name="gameEngine">The game engine to track.</param>
-        /// <param name="mapPane">The map window to refresh.</param>
-        /// <param name="top">The top-level application window.</param>
-        /// <returns>A <see cref="StatusBar"/> instance.</returns>
-        private static StatusBar CreateStatusBar(Engine gameEngine, MapWindow mapPane, Toplevel top)
+        /// <param name="gameEngine">The game engine instance.</param>
+        /// <returns>A <see cref="StatusBar"/> instance representing the status bar.</returns>
+        private static StatusBar CreateStatusBar(Engine gameEngine)
         {
             return new StatusBar(
             [
                 new StatusItem(Key.CtrlMask | Key.Q, "~^Q~ Quit", () => Application.RequestStop()),
                 new StatusItem(Key.F1, "~F1~ Help", () => MessageBox.Query("Help", "Show help dialog", "OK")),
-                new StatusItem(Key.a, "~A~dvance Tick", () =>
-                {
-                    gameEngine.NextTick();
-                    mapPane.RefreshMap(top.Frame.Size, gameEngine.CurrentState.Map);
-                }),
+                new StatusItem(Key.a, "~A~dvance Tick", gameEngine.NextTick),
             ]);
-        }
-
-        /// <summary>
-        /// Adds event handlers for resizing and tab changes.
-        /// </summary>
-        /// <param name="top">The top-level application window.</param>
-        /// <param name="tabView">The tab view to monitor.</param>
-        /// <param name="mapTab">The map tab to refresh.</param>
-        /// <param name="mapPane">The map window to refresh.</param>
-        /// <param name="statusPane">The status window to update.</param>
-        /// <param name="gameEngine">The game engine to track.</param>
-        private static void AddEventHandlers(Toplevel top, TabView tabView, TabView.Tab mapTab, MapWindow mapPane, Window statusPane, Engine gameEngine)
-        {
-            top.Resized += (Size newSize) =>
-            {
-                if (tabView.SelectedTab == mapTab)
-                {
-                    mapPane.RefreshMap(newSize, gameEngine.CurrentState.Map);
-                }
-            };
-
-            tabView.SelectedTabChanged += (sender, e) =>
-            {
-                if (e.NewTab == mapTab)
-                {
-                    mapPane.RefreshMap(top.Frame.Size, gameEngine.CurrentState.Map);
-                }
-            };
-
-            gameEngine.OnTickCompleted += (args) =>
-            {
-                if (tabView.SelectedTab == mapTab)
-                {
-                    mapPane.RefreshMap(top.Frame.Size, gameEngine.CurrentState.Map);
-                }
-            };
-
-            top.AddKeyBinding(Key.CtrlMask | Key.Q, Command.QuitToplevel);
         }
     }
 }
