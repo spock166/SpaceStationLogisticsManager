@@ -59,12 +59,17 @@ namespace SpaceStationLogisticsManager.UI.Windows
 
             if (currentShip != null)
             {
-                Label shipRouteLabel = new Label("Route: " + string.Join("\n", shipRoute?.Select(node => node.ToString()) ?? []))
+                TextView shipRouteTextView = new TextView()
                 {
                     X = Pos.Left(this),
-                    Y = 2
+                    Y = 2,
+                    Width = Dim.Fill(),
+                    Height = Dim.Fill(),
+                    ReadOnly = true,
+                    Text = "Route:\n" + string.Join("\n", shipRoute?.Select(node => node.ToString()) ?? new List<string>()),
+                    ColorScheme = Colors.Menu // Apply the base color scheme
                 };
-                Add(shipRouteLabel);
+                Add(shipRouteTextView);
             }
         }
     }
