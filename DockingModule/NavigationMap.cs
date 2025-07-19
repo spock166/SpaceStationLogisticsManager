@@ -54,6 +54,10 @@ namespace DockingModule
         /// </summary>
         public Dictionary<Ship, INavigationNode> Ships { get; }
 
+        /// <summary>
+        /// Gets the dictionary mapping ships to their respective routes.
+        /// Each route is represented as a list of navigation nodes that the ship is expected to traverse.
+        /// </summary>
         public Dictionary<Ship, List<INavigationNode>> ShipRoutes { get; }
 
         /// <summary>
