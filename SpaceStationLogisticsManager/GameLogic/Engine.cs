@@ -36,6 +36,8 @@ namespace SpaceStationLogisticsManager.GameLogic
         /// </summary>
         public event Action<Ship?, List<INavigationNode>?> OnShipSelectionChanged;
 
+        private List<INavigationNode> selectedRouteCache;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Engine"/> class.
         /// </summary>
@@ -44,6 +46,7 @@ namespace SpaceStationLogisticsManager.GameLogic
             CurrentState = new GameState { Map = new NavigationMap(3, 4) };
             OnTickCompleted = delegate { }; // Initialize to an empty delegate to avoid null checks
             OnShipSelectionChanged = delegate { }; // Initialize to an empty delegate to avoid null checks
+            selectedRouteCache = new List<INavigationNode>();
         }
 
         /// <summary>
@@ -92,7 +95,13 @@ namespace SpaceStationLogisticsManager.GameLogic
         public void SelectShip(string shipRegistry)
         {
             CurrentState.Map.TryGetShip(out Ship? ship, shipRegistry);
+            Ship? previousShip = CurrentState.SelectedShip;
             CurrentState.SelectedShip = ship;
+            if (previousShip != ship)
+            {
+                selectedRouteCache = CurrentState.Map.GetShipRoute(ship);
+            }
+
             if (ship != null)
             {
                 OnShipSelected?.Invoke(ship);
@@ -102,7 +111,7 @@ namespace SpaceStationLogisticsManager.GameLogic
                 OnShipDeselected?.Invoke();
             }
 
-            OnShipSelectionChanged?.Invoke(ship, CurrentState.Map.GetShipRoute(ship));
+            OnShipSelectionChanged?.Invoke(ship, selectedRouteCache);
         }
 
         /// <summary>
