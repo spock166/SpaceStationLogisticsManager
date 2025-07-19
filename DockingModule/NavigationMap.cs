@@ -28,6 +28,7 @@ namespace DockingModule
 
             Nodes = new List<INavigationNode>(numSegments * numRings + 1);
             Ships = new Dictionary<Ship, INavigationNode>();
+            ShipRoutes = new Dictionary<Ship, List<INavigationNode>>();
 
             RingCount = numRings;
             SegmentCount = numSegments;
@@ -52,6 +53,8 @@ namespace DockingModule
         /// Gets the dictionary mapping ships to their current navigation nodes.
         /// </summary>
         public Dictionary<Ship, INavigationNode> Ships { get; }
+
+        public Dictionary<Ship, List<INavigationNode>> ShipRoutes { get; }
 
         /// <summary>
         /// Gets the number of rings in the navigation map.
@@ -228,6 +231,52 @@ namespace DockingModule
         }
 
         /// <summary>
+        /// Attempts to retrieve a ship by its registry.
+        /// </summary>
+        /// <param name="ship">The output parameter to store the retrieved ship.</param>
+        /// <param name="shipRegistry">The registry of the ship to retrieve.</param>
+        /// <returns>True if the ship is found; otherwise, false.</returns>
+        public bool TryGetShip(out Ship? ship, string shipRegistry)
+        {
+            ship = Ships.Keys.FirstOrDefault(s => s.Registry.ToString() == shipRegistry);
+            if (ship != null)
+            {
+                return true;
+            }
+            ship = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves the route of a specified ship.
+        /// </summary>
+        /// <param name="ship">The ship whose route is to be retrieved.</param>
+        /// <returns>A list of navigation nodes representing the ship's route.</returns>
+        public List<INavigationNode> GetShipRoute(Ship? ship)
+        {
+            if (ship == null)
+            {
+                return new List<INavigationNode>(); // Return an empty list if no ship is provided
+            }
+
+            if (ShipRoutes.TryGetValue(ship, out List<INavigationNode>? route))
+            {
+                return route;
+            }
+
+            return new List<INavigationNode>(); // Return an empty list if no route exists for the ship
+        }
+
+        /// <summary>
+        /// Retrieves a list of ship registries currently in the navigation map.
+        /// </summary>
+        /// <returns>A list of ship registries as strings.</returns>
+        public List<string> GetShipRegistries()
+        {
+            return Ships.Keys.Select(ship => ship.Registry.ToString()).ToList();
+        }
+
+        /// <summary>
         /// Retrieves a list of open inbound nodes for ships.
         /// </summary>
         /// <returns>A list of navigation nodes that are open for inbound ships.</returns>
@@ -263,6 +312,7 @@ namespace DockingModule
             INavigationNode selectedNode = openNodes[0]; // Select the first available node for simplicity
             Ship newShip = new Ship(ShipDirection.Inbound);
             Ships.Add(newShip, selectedNode);
+            ShipRoutes.Add(newShip, new List<INavigationNode> { selectedNode });
             return true;
         }
     }

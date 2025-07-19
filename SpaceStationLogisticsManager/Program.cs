@@ -38,7 +38,7 @@ namespace SpaceStationLogisticsManager
             MenuBar topMenu = CreateMenuBar();
             top.Add(topMenu);
             TabView tabPane = CreateTabPane(engine, top);
-            Window menuPane = CreateMenuPane(tabPane);
+            Window menuPane = CreateMenuPane(tabPane, engine);
 
             top.Add(tabPane, menuPane);
 
@@ -55,12 +55,12 @@ namespace SpaceStationLogisticsManager
         /// </summary>
         /// <param name="tabPane">The tab view to align the operations pane with.</param>
         /// <returns>A <see cref="Window"/> instance representing the operations pane.</returns>
-        private static Window CreateMenuPane(TabView tabPane)
+        private static Window CreateMenuPane(TabView tabPane, Engine engine)
         {
 
             // Create operations pane
             Window menuPane = new Window("Operations") { X = Pos.Right(tabPane), Y = 0, Width = Dim.Percent(50), Height = Dim.Fill() };
-            ListView topLevelMenu = CreateTopLevelMenu();
+            ListView topLevelMenu = CreateTopLevelMenu(engine);
             menuPane.Add(topLevelMenu);
             return menuPane;
         }
@@ -69,7 +69,7 @@ namespace SpaceStationLogisticsManager
         /// Creates the top-level menu for the operations pane.
         /// </summary>
         /// <returns>A <see cref="ListView"/> instance representing the top-level menu.</returns>
-        private static ListView CreateTopLevelMenu()
+        private static ListView CreateTopLevelMenu(Engine engine)
         {
             ListView topLevelMenu = new ListView(new string[]
             {
@@ -87,7 +87,24 @@ namespace SpaceStationLogisticsManager
                 switch (args.Value)
                 {
                     case "Select Ship":
-                        MessageBox.Query("Select Ship", "Ship selection is not yet implemented.", "OK");
+                        List<string> shipRegistries = engine.GetShipRegistries();
+
+                        if (shipRegistries.Count == 0)
+                        {
+                            MessageBox.Query("Select Ship", "No ships available.", "OK");
+                        }
+                        else
+                        {
+                            // Convert ship registries to NStack.ustring for display
+                            NStack.ustring[] ustringShipRegistries = shipRegistries.Select(NStack.ustring.Make).ToArray();
+                            int selectedIndex = MessageBox.Query("Select Ship", "Choose a ship:", ustringShipRegistries);
+
+                            if (selectedIndex >= 0 && selectedIndex < shipRegistries.Count)
+                            {
+                                string selectedShip = shipRegistries[selectedIndex];
+                                engine.SelectShip(selectedShip);
+                            }
+                        }
                         break;
                     case "Quit Game":
                         QuitQuery();
@@ -134,7 +151,7 @@ namespace SpaceStationLogisticsManager
             tabPane.AddTab(statusTab, false);
 
 
-            mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
+            mapPane.RefreshMap(top.Frame.Size, engine.GetMap());
             return tabPane;
         }
 
@@ -152,7 +169,7 @@ namespace SpaceStationLogisticsManager
             {
                 if (tabPane.SelectedTab == mapTab)
                 {
-                    mapPane.RefreshMap(newSize, engine.CurrentState.Map);
+                    mapPane.RefreshMap(newSize, engine.GetMap());
                 }
             };
 
@@ -160,7 +177,7 @@ namespace SpaceStationLogisticsManager
             {
                 if (e.NewTab == mapTab)
                 {
-                    mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
+                    mapPane.RefreshMap(top.Frame.Size, engine.GetMap());
                 }
             };
 
@@ -168,7 +185,7 @@ namespace SpaceStationLogisticsManager
             {
                 if (tabPane.SelectedTab == mapTab)
                 {
-                    mapPane.RefreshMap(top.Frame.Size, engine.CurrentState.Map);
+                    mapPane.RefreshMap(top.Frame.Size, engine.GetMap());
                 }
             };
         }

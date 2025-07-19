@@ -1,4 +1,5 @@
 using DockingModule;
+using ShipModule;
 
 namespace SpaceStationLogisticsManager.GameLogic
 {
@@ -13,6 +14,11 @@ namespace SpaceStationLogisticsManager.GameLogic
         public int CurrentTick { get; set; }
 
         /// <summary>
+        /// Gets or sets the currently selected ship in the game.
+        /// </summary>
+        public Ship? SelectedShip { get; set; }
+
+        /// <summary>
         /// Gets or sets the navigation map of the game.
         /// </summary>
         public required NavigationMap Map { get; set; }
@@ -24,6 +30,7 @@ namespace SpaceStationLogisticsManager.GameLogic
         {
             CurrentTick = 0;
             Map = new NavigationMap(3, 4); // Default map dimensions      
+            SelectedShip = null; // No ship selected by default
         }
     }
 }
