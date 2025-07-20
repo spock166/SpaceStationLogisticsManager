@@ -11,6 +11,11 @@ namespace DockingModule.NavigationNodes
             DockedShips = new List<Ship>();
         }
 
+        public override string ToString()
+        {
+            return $"Ring: {Ring}, Segment: {Segment}";
+        }
+
         public int Ring { get; }
         public int Segment { get; }
         public List<Ship> DockedShips { get; }
